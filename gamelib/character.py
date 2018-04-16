@@ -1,7 +1,7 @@
 
 import pygame
 import data
-from constants import RADIUS, WALL_S
+from constants import *
 
 class Player(pygame.sprite.Sprite):
 
@@ -14,7 +14,6 @@ class Player(pygame.sprite.Sprite):
         self.resting = False
         self.dy = 0
 
-
     def update(self, game):
         dt = game.dt / 1000.
         last = self.rect.copy()
@@ -24,12 +23,15 @@ class Player(pygame.sprite.Sprite):
             self.rect.x -= 300 * dt
         if key[pygame.K_RIGHT]:
             self.rect.x += 300 * dt
-        if self.rect.x < 0:
-            self.rect.x = 0
+        if self.rect.left < 0:
+            self.rect.left = 0
+
+        if self.rect.right > SCREEN_W:
+            self.rect.right = SCREEN_W
 
         if self.resting and key[pygame.K_SPACE]:
             self.dy = -800
-        self.dy = min(400, self.dy + 40)
+        self.dy = self.dy + 25
 
         self.rect.y += self.dy * dt
 
@@ -44,6 +46,7 @@ class Player(pygame.sprite.Sprite):
             if last.top >= cell.bottom and new.top < cell.bottom:
                 new.top = cell.bottom
                 self.dy = 0
+
 
 class Wall(pygame.sprite.Sprite):
 

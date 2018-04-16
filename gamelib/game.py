@@ -11,13 +11,14 @@ class Game:
         self.player = character.Player(100, 100, self.sprites)
 
     def run(self):
-
         self.walls = pygame.sprite.Group()
         for x in range(0, SCREEN_W, WALL_S):
             for y in [0, SCREEN_H-WALL_S]:
                 character.Wall(x, y, self.walls)
         self.sprites.add(self.walls)
+        self.loop()
 
+    def loop(self):
         while True:
             self.dt = self.clock.tick(30)
 
@@ -28,7 +29,10 @@ class Game:
                         event.key == pygame.K_ESCAPE):
                     return
 
-            self.sprites.update(self)
-            self.screen.fill((200, 200, 200))
-            self.sprites.draw(self.screen)
-            pygame.display.flip()
+            self.view()
+
+    def view(self):
+        self.sprites.update(self)
+        self.screen.fill((200, 200, 200))
+        self.sprites.draw(self.screen)
+        pygame.display.flip()
