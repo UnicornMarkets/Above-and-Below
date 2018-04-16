@@ -6,8 +6,13 @@ Feel free to put all your game code here, or in other modules in this "gamelib"
 package.
 '''
 
-import data
+import pygame
+from game import Game
+from constants import SCREEN_H, SCREEN_W
 
 def main():
-    print "Hello from your game's main()"
-    print data.load('sample.txt').read()
+    pygame.init()
+    screen = pygame.display.set_mode((SCREEN_W, SCREEN_H),
+                            pygame.HWSURFACE|pygame.FULLSCREEN)
+    g = Game(screen)
+    g.run()
