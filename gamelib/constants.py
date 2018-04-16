@@ -1,0 +1,7 @@
+
+RADIUS = 64
+
+WALL_S = 64
+
+SCREEN_H = WALL_S * 15
+SCREEN_W = WALL_S * 20
