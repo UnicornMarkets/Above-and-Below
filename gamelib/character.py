@@ -32,6 +32,7 @@ class Player(pygame.sprite.Sprite):
         self.horizontal(key)
         self.vertical(key)
         self.collisions(last, game)
+        self.groups()[0].camera_y = self.rect.y - (SCREEN_H - 0.5 * RADIUS)
 
     def horizontal(self, key):
         """

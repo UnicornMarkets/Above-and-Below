@@ -1,6 +1,7 @@
 import pygame
 import character
 import groups
+import random
 from constants import *
 
 class Game:
@@ -17,8 +18,11 @@ class Game:
         self.walls = pygame.sprite.Group()
         self.platforms = groups.Platforms()
         for x in range(0, SCREEN_W, WALL_S):
-            for y in [0, SCREEN_H-WALL_S]:
-                groups.Wall(x, y, self.walls)
+            for y in [-2 * SCREEN_H, -SCREEN_H-WALL_S, -SCREEN_H, -WALL_S,
+                        0, SCREEN_H-WALL_S, SCREEN_H, -2 * SCREEN_H-WALL_S]:
+                if x not in [WALL_S * n for n in range(8, 12, 1)] \
+                        or y not in [0, -WALL_S]:
+                    groups.Wall(x, y, self.walls)
         self.sprites.add(self.walls)
         self.loop()
 

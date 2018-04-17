@@ -23,12 +23,11 @@ class Platforms(ScrolledGroup):
     last_add = None
 
     def update(self, distance):
-        for block in self.sprites():
-            if block.rect.right < 0:
-                block.kill()
+        for wall in self.sprites():
+            if wall.rect.right < 0:
+                wall.kill()
         if self.last_add is None:
             self.last_add = self.sprites()[-1].rect.right
-        if distance > self.last_add - 300:
             self.last_add = x = distance + SCREEN_W
             self.add(Wall(SCREEN_W, SCREEN_H / 2))
 
