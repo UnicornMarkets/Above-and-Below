@@ -1,11 +1,18 @@
 
 import pygame
 import data
+import math
 from constants import *
 
 class Player(pygame.sprite.Sprite):
+    """
+    the main actor in the game
+    """
 
-    def __init__(self, x, y, *groups):
+    def __init__(self, x, y, dt, *groups):
+        """
+        setup player
+        """
         super(Player, self).__init__(*groups)
         self.image = pygame.transform.scale(pygame.image.load(
                             data.filepath("coloredspheres", "sphere-00.png")),
@@ -13,49 +20,55 @@ class Player(pygame.sprite.Sprite):
         self.rect = pygame.rect.Rect((x, y), self.image.get_size())
         self.resting = False
         self.dy = 0
+        self.dt = dt / 1000.
+        self.bounce = pygame.mixer.Sound(data.filepath('sounds', 'bounce.mp3'))
 
     def update(self, game):
-        dt = game.dt / 1000.
+        """
+        method that handles all player updates during gameplay
+        """
         last = self.rect.copy()
-
         key = pygame.key.get_pressed()
+        self.horizontal(key)
+        self.vertical(key)
+        self.collisions(last, game)
+
+    def horizontal(self, key):
+        """
+        deals with horizontal movements of player
+        """
         if key[pygame.K_LEFT]:
-            self.rect.x -= 300 * dt
+            self.rect.x -= 300 * self.dt
         if key[pygame.K_RIGHT]:
-            self.rect.x += 300 * dt
+            self.rect.x += 300 * self.dt
         if self.rect.left < 0:
             self.rect.left = 0
-
         if self.rect.right > SCREEN_W:
             self.rect.right = SCREEN_W
 
+    def vertical(self, key):
+        """
+        deals with vertical movement of player
+        """
         if self.resting and key[pygame.K_SPACE]:
-            self.dy = -800
+            self.dy = -650
         self.dy = self.dy + 25
-
-        self.rect.y += self.dy * dt
-
-        new = self.rect
+        self.rect.y += self.dy * self.dt
         self.resting = False
-        for cell in pygame.sprite.spritecollide(self, game.walls, False):
-            cell = cell.rect
-            if last.bottom <= cell.top and new.bottom > cell.top:
+
+    def collisions(self, last, game):
+        """
+        handles any player collisions with walls and/or objects
+        """
+        for wall in pygame.sprite.spritecollide(self, game.walls, False):
+            if last.bottom <= wall.rect.top:
                 self.resting = True
-                new.bottom = cell.top
-                self.dy = 0
-            if last.top >= cell.bottom and new.top < cell.bottom:
-                new.top = cell.bottom
-                self.dy = 0
-
-
-class Wall(pygame.sprite.Sprite):
-
-    def __init__(self, x, y, *groups):
-        super(Wall, self).__init__(*groups)
-        self.image = pygame.transform.scale(pygame.image.load(
-                                    data.filepath("world", "block.png")),
-                                    (WALL_S, WALL_S))
-        self.rect = pygame.rect.Rect((x, y), self.image.get_size())
-
-    def update(self, game):
-        pass
+                self.rect.bottom = wall.rect.top
+                if abs(self.dy) > 150:
+                    self.bounce.play()
+                self.dy = - self.dy + 150
+            if last.top >= wall.rect.bottom:
+                self.rect.top = wall.rect.bottom
+                if abs(self.dy) > 150:
+                    self.bounce.play()
+                self.dy = - self.dy
