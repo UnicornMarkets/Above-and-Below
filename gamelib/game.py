@@ -2,6 +2,7 @@ import pygame
 import character
 import groups
 import random
+import data
 from constants import *
 
 class Game:
@@ -13,18 +14,24 @@ class Game:
         self.sprites = pygame.sprite.Group()
         self.player = character.Player(100, 100, self.dt, self.sprites)
         self.distance = 100
+        self.levels = {}
+        self.level = 0
+        self.world = 0
 
     def run(self):
-        self.walls = pygame.sprite.Group()
-        self.platforms = groups.Platforms()
-        for x in range(0, SCREEN_W, WALL_S):
-            for y in [-2 * SCREEN_H, -SCREEN_H-WALL_S, -SCREEN_H, -WALL_S,
-                        0, SCREEN_H-WALL_S, SCREEN_H, -2 * SCREEN_H-WALL_S]:
-                if x not in [WALL_S * n for n in range(8, 12, 1)] \
-                        or y not in [0, -WALL_S]:
-                    groups.Wall(x, y, self.walls)
-        self.sprites.add(self.walls)
+        [self.read_levels(i) for i in range(5)]
         self.loop()
+
+    def read_levels(self, level_num):
+        self.levels[level_num] = pygame.sprite.Group()
+        level = data.load('levels', 'level' + str(level_num) + '.txt', 'r')
+        y = 0
+        for row in level.readlines():
+            for x in range(HOR_BL):
+                if row[x] == 'W':
+                    groups.Wall(x * BLOCK_S, y * BLOCK_S,
+                                self.levels[level_num])
+            y += 1
 
     def loop(self):
         while True:
@@ -35,11 +42,36 @@ class Game:
                         event.key == pygame.K_ESCAPE):
                     return
 
+            if self.player.rect.centery < 0 and self.world == 0:
+                self.level += 1
+                self.player.rect.centery = SCREEN_H
+            if self.player.rect.centery > SCREEN_H and self.world == 0:
+                print("you lost!")
+                return
+
+            if self.player.rect.centery > SCREEN_H and self.world == 1:
+                self.level -= 1
+                self.player.rect.centery = 0
+            if self.player.rect.centery < 0 and self.world == 1:
+                print("you lost!")
+                return
+
+
             self.view()
 
+    def flip_world(self):
+
+        self.world = 1
+
     def view(self):
+
+        if self.world == 0:
+            world_color = (108 + self.level * 24, 186 + self.level * 7, 255)
+        elif self.world == 1:
+            world_color = (255,  186 + self.level * 7, 108 + self.level * 24)
+
         self.sprites.update(self)
-        self.screen.fill((200, 200, 200))
+        self.screen.fill(world_color)
         self.sprites.draw(self.screen)
-        self.platforms.draw(self.screen, self.distance)
+        self.levels[self.level].draw(self.screen)
         pygame.display.flip()
