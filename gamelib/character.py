@@ -2,7 +2,12 @@
 import pygame
 import data
 import math
+from threading import Timer
 from constants import *
+
+def clamp(value, min_value, max_value):
+    """Clamp value to a range between min_value and max_value."""
+    return max(min_value, min(value, max_value))
 
 class Player(pygame.sprite.Sprite):
     """
@@ -30,7 +35,7 @@ class Player(pygame.sprite.Sprite):
         last = self.rect.copy()
         key = pygame.key.get_pressed()
         self.horizontal(key)
-        self.vertical(key)
+        self.vertical(key, game)
         self.collisions(last, game)
         self.groups()[0].camera_y = self.rect.y - (SCREEN_H - 0.5 * RADIUS)
 
@@ -47,29 +52,87 @@ class Player(pygame.sprite.Sprite):
         if self.rect.right > SCREEN_W:
             self.rect.right = SCREEN_W
 
-    def vertical(self, key):
+    def vertical(self, key, game):
         """
         deals with vertical movement of player
         """
-        if self.resting and key[pygame.K_SPACE]:
-            self.dy = -650
-        self.dy = self.dy + 25
-        self.rect.y += self.dy * self.dt
-        self.resting = False
+        if game.world == 0:
+            if self.resting and key[pygame.K_SPACE]:
+                self.dy = -850
+                self.resting = False
+            self.dy = self.dy + 25
+            self.rect.y += self.dy * self.dt
+        if game.world == 1:
+            if self.resting and key[pygame.K_SPACE]:
+                self.dy = 850
+                self.resting = False
+
+            self.dy = self.dy - 25
+            self.rect.y += self.dy * self.dt
+
+    def _rgravity_bounce(self, wall):
+        if abs(self.dy) > 150:
+            self.bounce.play()
+            self.dy = - self.dy - 150
+        else:
+            self.resting = True
+            self.dy = 0
+
+    def _gravity_bounce(self, wall):
+        if abs(self.dy) > 150:
+            self.bounce.play()
+            self.dy = - self.dy + 150
+        else:
+            self.resting = True
+            self.dy = 0
+
+    def _normal_bounce(self, wall):
+        if abs(self.dy) > 150:
+            self.bounce.play()
+            self.dy = - self.dy
+        else:
+            self.resting = True
+            self.dy = 0
 
     def collisions(self, last, game):
         """
         handles any player collisions with walls and/or objects
         """
-        for wall in pygame.sprite.spritecollide(self, game.walls, False):
-            if last.bottom <= wall.rect.top:
-                self.resting = True
-                self.rect.bottom = wall.rect.top
-                if abs(self.dy) > 150:
-                    self.bounce.play()
-                self.dy = - self.dy + 150
-            if last.top >= wall.rect.bottom:
-                self.rect.top = wall.rect.bottom
-                if abs(self.dy) > 150:
-                    self.bounce.play()
-                self.dy = - self.dy
+        walls = game.levels[game.level]
+        for wall in pygame.sprite.spritecollide(self, walls, False):
+
+            if last.right <= wall.rect.left:
+                self.rect.right = wall.rect.left
+            if last.left >= wall.rect.right:
+                self.rect.left = wall.rect.right
+            if game.world == 0:
+                if last.bottom <= wall.rect.top:
+                    self.rect.bottom = wall.rect.top
+                    self._gravity_bounce(wall)
+            if game.world == 1:
+                if last.top >= wall.rect.bottom:
+                    self.rect.top = wall.rect.bottom
+                    self._rgravity_bounce(wall)
+
+
+            if pygame.sprite.collide_mask(self, wall):
+
+                if game.world == 0:
+                    #if last.bottom <= wall.rect.top:
+                        #self.rect.bottom = wall.rect.top
+                        #self._gravity_bounce(wall)
+                    if last.top >= wall.rect.bottom:
+                        self.rect.top = wall.rect.bottom
+                        self._normal_bounce(wall)
+                        if game.level == 4:
+                            game.flip_world()
+                if game.world == 1:
+                    if last.bottom <= wall.rect.top:
+                        self.rect.bottom = wall.rect.top
+                        self._normal_bounce(wall)
+                        if game.level == 0:
+                            print("you won!")
+                            return
+                    #if last.top >= wall.rect.bottom:
+                        #self.rect.top = wall.rect.bottom
+                        #self._rgravity_bounce(wall)
