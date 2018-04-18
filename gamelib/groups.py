@@ -2,46 +2,41 @@ import pygame
 from constants import *
 import data
 
-class ScrolledGroup(pygame.sprite.Group):
-    """
-    all groups that are scolled through.
-
-    This should be the ground and ceiling at each different height,
-    platforms to jump on/off in the game,
-    objects that give powerups/destroy you.
-    """
-    def draw(self, surface, distance):
-        for sprite in self.sprites():
-            surface.blit(sprite.image, (sprite.rect.x - distance,
-                sprite.rect.y))
-
-class Platforms(ScrolledGroup):
-    """
-    These are for jumping,
-    you have to jump your way to the top or the bottom, but not fall through
-    """
-    last_add = None
-
-    def update(self, distance):
-        for wall in self.sprites():
-            if wall.rect.right < 0:
-                wall.kill()
-        if self.last_add is None:
-            self.last_add = self.sprites()[-1].rect.right
-            self.last_add = x = distance + SCREEN_W
-            self.add(Wall(SCREEN_W, SCREEN_H / 2))
-
 class Wall(pygame.sprite.Sprite):
     """
-    boundries for the game
+    Walls and platforms for the game
     """
 
     def __init__(self, x, y, *groups):
         super(Wall, self).__init__(*groups)
         self.image = pygame.transform.scale(pygame.image.load(
                                     data.filepath("world", "block.png")),
-                                    (WALL_S, WALL_S))
+                                    (BLOCK_S, BLOCK_S))
         self.rect = pygame.rect.Rect((x, y), self.image.get_size())
 
     def update(self, game):
         pass
+
+class Ground(pygame.sprite.Sprite):
+
+    def __init__(self, x, y, *groups):
+        super(Ground, self).__init__(*groups)
+        self.image = pygame.transform.scale(pygame.image.load(
+                                    data.filepath("world", "block.png")),
+                                    (BLOCK_S, BLOCK_S * HOR_BL))
+        self.rect = pygame.rect.Rect((x, y), self.image.get_size())
+
+    def update(self, game):
+        pass
+
+class Ceiling(pygame.sprite.Sprite):
+    pass
+
+class Platforms(pygame.sprite.Sprite):
+    pass
+
+class Points(pygame.sprite.Sprite):
+    """
+    to make the game more interesting these objects give points
+    """
+    pass
