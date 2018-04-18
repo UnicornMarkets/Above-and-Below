@@ -27,14 +27,23 @@ class Game:
         level = data.load('levels', 'level' + str(level_num) + '.txt', 'r')
         y = 0
         for row in level.readlines():
-            if row[0] == 'C' or row[0] == 'G':
-                groups.Ground(x, y * BLOCK_S, row[0],
-                              self.levels[level_num])
-            else:
-                for x in range(HOR_BL):
-                    if row[x] == 'W':
-                        groups.Wall(x * BLOCK_S, y * BLOCK_S,
+            """if y == 0 or y == 14:
+                space = row.count(' ')
+                if space > 0:
+                    sides = row.split()
+                    groups.Ground(0, y * BLOCK_S, len(sides[0]),
+                                  self.levels[level_num])
+                    x_shift = len(sides[0]) + space
+                    groups.Ground(x_shift, y * BLOCK_S, len(sides[1]),
                                     self.levels[level_num])
+                else:
+                    groups.Ground(0, y * BLOCK_S, len(row),
+                                    self.levels[level_num])
+            else:"""
+            for x in range(HOR_BL):
+                if row[x] == 'W':
+                    groups.Wall(x * BLOCK_S, y * BLOCK_S,
+                                self.levels[level_num])
             y += 1
 
     def loop(self):
