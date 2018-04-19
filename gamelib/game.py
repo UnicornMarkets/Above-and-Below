@@ -20,26 +20,13 @@ class Game:
 
     def run(self):
         [self.read_levels(i) for i in range(5)]
-        self.loop()
+        return self.loop()
 
     def read_levels(self, level_num):
         self.levels[level_num] = pygame.sprite.Group()
         level = data.load('levels', 'level' + str(level_num) + '.txt', 'r')
         y = 0
         for row in level.readlines():
-            """if y == 0 or y == 14:
-                space = row.count(' ')
-                if space > 0:
-                    sides = row.split()
-                    groups.Ground(0, y * BLOCK_S, len(sides[0]),
-                                  self.levels[level_num])
-                    x_shift = len(sides[0]) + space
-                    groups.Ground(x_shift, y * BLOCK_S, len(sides[1]),
-                                    self.levels[level_num])
-                else:
-                    groups.Ground(0, y * BLOCK_S, len(row),
-                                    self.levels[level_num])
-            else:"""
             for x in range(HOR_BL):
                 if row[x] == 'W':
                     groups.Wall(x * BLOCK_S, y * BLOCK_S,
@@ -56,25 +43,27 @@ class Game:
                     return
 
             if self.player.rect.centery < 0 and self.world == 0:
-                self.level += 1
-                self.player.rect.centery = SCREEN_H
+                if self.level == 4:
+                    self.world = 1
+                    self.player.rect.centery = 0
+                    self.player.dy = - self.player.dy
+                else:
+                    self.level += 1
+                    self.player.rect.centery = SCREEN_H
             if self.player.rect.centery > SCREEN_H and self.world == 0:
-                print("you lost!")
-                return
+                return 'lose'
 
             if self.player.rect.centery > SCREEN_H and self.world == 1:
-                self.level -= 1
-                self.player.rect.centery = 0
+                if self.level == 0:
+                    return 'win'
+                else:
+                    self.level -= 1
+                    self.player.rect.centery = 0
             if self.player.rect.centery < 0 and self.world == 1:
-                print("you lost!")
-                return
+                return 'lose'
 
 
             self.view()
-
-    def flip_world(self):
-
-        self.world = 1
 
     def view(self):
 

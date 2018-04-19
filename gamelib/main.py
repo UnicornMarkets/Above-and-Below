@@ -15,4 +15,8 @@ def main():
     screen = pygame.display.set_mode((SCREEN_W, SCREEN_H),
                             pygame.HWSURFACE|pygame.FULLSCREEN)
     g = Game(screen)
-    g.run()
+    win_lose = g.run()
+    if win_lose == 'lose':
+        print("you lose!")
+    elif win_lose == 'win':
+        print("you win!")

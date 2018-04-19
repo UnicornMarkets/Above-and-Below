@@ -13,6 +13,7 @@ class Wall(pygame.sprite.Sprite):
                                     data.filepath("world", "block.png")),
                                     (BLOCK_S, BLOCK_S))
         self.rect = pygame.rect.Rect((x, y), self.image.get_size())
+        self.mask = pygame.mask.from_surface(self.image)
 
     def update(self, game):
         pass

@@ -19,14 +19,17 @@ class Player(pygame.sprite.Sprite):
         setup player
         """
         super(Player, self).__init__(*groups)
+        self.points = 0
         self.image = pygame.transform.scale(pygame.image.load(
-                            data.filepath("coloredspheres", "sphere-00.png")),
+                                 data.filepath("coloredspheres", "sphere-" +
+                                                    str(self.points) + ".png")),
                                          (2 * RADIUS, 2 * RADIUS))
         self.rect = pygame.rect.Rect((x, y), self.image.get_size())
         self.resting = False
         self.dy = 0
         self.dt = dt / 1000.
         self.bounce = pygame.mixer.Sound(data.filepath('sounds', 'bounce.mp3'))
+        self.mask = pygame.mask.from_surface(self.image)
 
     def update(self, game):
         """
@@ -108,31 +111,18 @@ class Player(pygame.sprite.Sprite):
             if game.world == 0:
                 if last.bottom <= wall.rect.top:
                     self.rect.bottom = wall.rect.top
-                    self._gravity_bounce(wall)
-            if game.world == 1:
+                    if self.dy > 0:
+                        self._gravity_bounce(wall)
                 if last.top >= wall.rect.bottom:
                     self.rect.top = wall.rect.bottom
-                    self._rgravity_bounce(wall)
-
-
-            if pygame.sprite.collide_mask(self, wall):
-
-                if game.world == 0:
-                    #if last.bottom <= wall.rect.top:
-                        #self.rect.bottom = wall.rect.top
-                        #self._gravity_bounce(wall)
-                    if last.top >= wall.rect.bottom:
-                        self.rect.top = wall.rect.bottom
+                    if self.dy < 0:
                         self._normal_bounce(wall)
-                        if game.level == 4:
-                            game.flip_world()
-                if game.world == 1:
-                    if last.bottom <= wall.rect.top:
-                        self.rect.bottom = wall.rect.top
+            if game.world == 1:
+                if last.bottom <= wall.rect.top:
+                    self.rect.bottom = wall.rect.top
+                    if self.dy > 0:
                         self._normal_bounce(wall)
-                        if game.level == 0:
-                            print("you won!")
-                            return
-                    #if last.top >= wall.rect.bottom:
-                        #self.rect.top = wall.rect.bottom
-                        #self._rgravity_bounce(wall)
+                if last.top >= wall.rect.bottom:
+                    self.rect.top = wall.rect.bottom
+                    if self.dy < 0:
+                        self._rgravity_bounce(wall)
