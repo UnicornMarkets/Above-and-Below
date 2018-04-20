@@ -1,7 +1,6 @@
 import pygame
 import character
 import groups
-import random
 import data
 from constants import *
 

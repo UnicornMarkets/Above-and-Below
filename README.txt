@@ -14,7 +14,6 @@ You might need to install some of these before running the game:
 
   Python:     http://www.python.org/
   PyGame:     http://www.pygame.org/
-  pygame-menu:https://github.com/ppizarror/pygame-menu
 
 
 RUNNING THE GAME:

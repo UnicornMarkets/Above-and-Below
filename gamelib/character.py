@@ -1,8 +1,6 @@
 
 import pygame
 import data
-import math
-from threading import Timer
 from constants import *
 
 class Player(pygame.sprite.Sprite):
