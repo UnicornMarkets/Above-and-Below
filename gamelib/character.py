@@ -24,7 +24,7 @@ class Player(pygame.sprite.Sprite):
         self.resting = False
         self.dy = 0
         self.dt = dt / 1000.
-        self.bounce = pygame.mixer.Sound(data.filepath('sounds', 'bounce.mp3'))
+        self.bounce = pygame.mixer.Sound(data.filepath('sounds', 'bounce.wav'))
         self.mask = pygame.mask.from_surface(self.image)
 
     def update(self, game):

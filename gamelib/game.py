@@ -28,18 +28,21 @@ class Menu:
         self.above = pygame.image.load(data.filepath("top", "above_below.png"))
         self.below = pygame.transform.flip(pygame.image.load(
                         data.filepath("top", "above_below.png")), False, True)
+        self.name_image = pygame.image.load(data.filepath("top", "abv_blw.png"))
+        self.name_pos = (SCREEN_W / 2 - self.name_image.get_rect().width / 2,
+                         SCREEN_H / 2 - self.name_image.get_rect().height / 2)
         self.above_d = {1: pygame.transform.scale(self.above,
-                                    (int(1.5 * self.above.get_rect().width),
-                                    int(1.5 * self.above.get_rect().height))),
+                                    (int(1.4 * self.above.get_rect().width),
+                                    int(1.4 * self.above.get_rect().height))),
                         2: pygame.transform.scale(self.above,
-                                     (int(2 * self.above.get_rect().width),
-                                      int(2 * self.above.get_rect().height)))}
+                                     (int(1.8 * self.above.get_rect().width),
+                                      int(1.8 * self.above.get_rect().height)))}
         self.below_d = {1: pygame.transform.scale(self.below,
-                                    (int(1.5 * self.below.get_rect().width),
-                                    int(1.5 * self.below.get_rect().height))),
+                                    (int(1.4 * self.below.get_rect().width),
+                                    int(1.4 * self.below.get_rect().height))),
                         2: pygame.transform.scale(self.below,
-                                    (int(2 * self.below.get_rect().width),
-                                    int(2 * self.below.get_rect().height)))}
+                                    (int(1.8 * self.below.get_rect().width),
+                                    int(1.8 * self.below.get_rect().height)))}
         self.above_pos = {1: (SCREEN_W / 2 - self.above_d[1].get_rect().width / 2,
                             SCREEN_H / 4 - self.above_d[1].get_rect().height / 2),
                           2: (SCREEN_W / 2 - self.above_d[2].get_rect().width / 2,
@@ -53,6 +56,9 @@ class Menu:
         self.above_i = self.above_d[1]
         self.below_p = self.below_pos[1]
         self.below_i = self.below_d[1]
+        self.ding = pygame.mixer.Sound(data.filepath('sounds', 'ding.wav'))
+        self.ding.set_volume(.6)
+        self.start_sound = pygame.mixer.Sound(data.filepath('sounds', 'start.wav'))
 
     def play(self):
         while True:
@@ -63,21 +69,25 @@ class Menu:
                     if event.key == pygame.K_ESCAPE:
                         return
                     if event.key == pygame.K_UP:
+                        self.ding.play()
                         self.above_i = self.above_d[2]
                         self.above_p = self.above_pos[2]
                         self.below_i = self.below_d[1]
                         self.below_p = self.below_pos[1]
                         self.world = 1
                     if event.key == pygame.K_DOWN:
+                        self.ding.play()
                         self.above_i = self.above_d[1]
                         self.above_p = self.above_pos[1]
                         self.below_i = self.below_d[2]
                         self.below_p = self.below_pos[2]
                         self.world = 0
                     if event.key == pygame.K_SPACE:
+                        self.start_sound.play()
                         return self.world
 
             self.screen.fill((212, 253, 204))
+            self.screen.blit(self.name_image, self.name_pos)
             self.screen.blit(self.above_i, self.above_p)
             self.screen.blit(self.below_i, self.below_p)
             pygame.display.flip()
