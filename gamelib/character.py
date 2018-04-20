@@ -5,10 +5,6 @@ import math
 from threading import Timer
 from constants import *
 
-def clamp(value, min_value, max_value):
-    """Clamp value to a range between min_value and max_value."""
-    return max(min_value, min(value, max_value))
-
 class Player(pygame.sprite.Sprite):
     """
     the main actor in the game
