@@ -17,3 +17,8 @@ class Wall(pygame.sprite.Sprite):
 
     def update(self, game):
         pass
+
+class Star(pygame.sprite.Sprite):
+    """
+    these add points for the player
+    """
