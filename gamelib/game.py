@@ -47,7 +47,7 @@ class Ending:
         self.image_pos = (SCREEN_W / 2 - self.image.get_rect().width / 2,
                          SCREEN_H / 2 - self.image.get_rect().height / 2)
         pygame.mixer.music.load(data.filepath('sounds', win_lose + '.mp3'))
-        pygame.mixer.music.set_volume(1)
+        pygame.mixer.music.set_volume(.8)
         pygame.mixer.music.play(-1)
         self.top_image = pygame.image.load(data.filepath("top",
                                     win_lose + "1.png"))
@@ -238,6 +238,8 @@ class Game:
         self.player = character.Player(100, 100, self.dt, self.sprites)
         self.distance = 100
         self.levels = {}
+        self.astar = {}
+        self.bstar = {}
         self.level = level
         self.world = world
         self.flipped = False
@@ -249,6 +251,8 @@ class Game:
 
     def read_levels(self, level_num):
         self.levels[level_num] = pygame.sprite.Group()
+        self.astar[level_num] = pygame.sprite.Group()
+        self.bstar[level_num] = pygame.sprite.Group()
         level = data.load('levels', 'level' + str(level_num) + '.txt', 'r')
         y = 0
         for row in level.readlines():
@@ -256,6 +260,12 @@ class Game:
                 if row[x] == 'W':
                     groups.Wall(x * BLOCK_S, y * BLOCK_S,
                                 self.levels[level_num])
+                if row[x] == 'A':
+                    groups.Star(x * BLOCK_S, y * BLOCK_S, 'a',
+                                self.astar[level_num])
+                if row[x] == 'B':
+                    groups.Star(x * BLOCK_S, y * BLOCK_S, 'b',
+                                self.bstar[level_num])
             y += 1
 
     def loop(self):

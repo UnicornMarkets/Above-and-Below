@@ -5,7 +5,8 @@ Theme: "Two Worlds"
 
 Entry in PyWeek #25  <http://www.pyweek.org/e/Above-and-Below>
 Team: Unicorn Markets
-Members: Michael Tamillow (Other members of Unicorn Markets competing independently this pyweek)
+Members: Michael Tamillow
+Other members of Unicorn Markets are competing independently this pyweek
 
 
 DEPENDENCIES:
@@ -26,6 +27,11 @@ Othewise open a terminal / console and "cd" to the game directory and run:
 
 
 HOW TO PLAY THE GAME:
+
+spacebar to jump
+right left to move
+
+get to the top and come back down or vice-versa
 
 
 

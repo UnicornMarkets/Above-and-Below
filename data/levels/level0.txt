@@ -1,12 +1,12 @@
 WWWWWWWWWW    WWWWWW
 W                  W
-W                  W
-W                  W
-WWWWW              W
+W  B               W
+W A                W
+WWWWW       A      W
 W                  W
 W          WWWW    W
 W                  W
-W                  W
+W      A    B      W
 W                  W
 W     WWWW         W
 W                  W
