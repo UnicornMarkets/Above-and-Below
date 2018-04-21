@@ -24,6 +24,8 @@ class Player(pygame.sprite.Sprite):
         self.dt = dt / 1000.
         self.bounce = pygame.mixer.Sound(data.filepath('sounds', 'bounce.wav'))
         self.mask = pygame.mask.from_surface(self.image)
+        self.pop = pygame.mixer.Sound(data.filepath('sounds', 'pop.wav'))
+        self.ticktock = pygame.mixer.Sound(data.filepath('sounds', 'ticktock.wav'))
 
     def update(self, game):
         """
@@ -34,7 +36,24 @@ class Player(pygame.sprite.Sprite):
         self.horizontal(key)
         self.vertical(key, game)
         self.collisions(last, game)
-        self.groups()[0].camera_y = self.rect.y - (SCREEN_H - 0.5 * RADIUS)
+        self.get_points(game)
+
+    def get_points(self, game):
+        if game.world == 0:
+            points = game.bpoint[game.level]
+        elif game.world == 1:
+            points = game.apoint[game.level]
+        for point in pygame.sprite.spritecollide(self,points,
+                            True, pygame.sprite.collide_mask):
+            self.pop.play()
+            self.points += 1
+            self.image = pygame.transform.scale(pygame.image.load(
+                                     data.filepath("coloredspheres", "sphere-" +
+                                            str(self.points) + ".png")),
+                                             (2 * RADIUS, 2 * RADIUS))
+            if self.points == 24:
+                self.ticktock.play()
+
 
     def horizontal(self, key):
         """

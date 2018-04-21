@@ -238,12 +238,13 @@ class Game:
         self.player = character.Player(100, 100, self.dt, self.sprites)
         self.distance = 100
         self.levels = {}
-        self.astar = {}
-        self.bstar = {}
+        self.apoint = {}
+        self.bpoint = {}
         self.level = level
         self.world = world
         self.flipped = False
         self.sound_list = []
+        self.font = pygame.font.Font(None, 80)
 
     def run(self):
         [self.read_levels(i) for i in range(5)]
@@ -251,8 +252,8 @@ class Game:
 
     def read_levels(self, level_num):
         self.levels[level_num] = pygame.sprite.Group()
-        self.astar[level_num] = pygame.sprite.Group()
-        self.bstar[level_num] = pygame.sprite.Group()
+        self.apoint[level_num] = pygame.sprite.Group()
+        self.bpoint[level_num] = pygame.sprite.Group()
         level = data.load('levels', 'level' + str(level_num) + '.txt', 'r')
         y = 0
         for row in level.readlines():
@@ -261,11 +262,11 @@ class Game:
                     groups.Wall(x * BLOCK_S, y * BLOCK_S,
                                 self.levels[level_num])
                 if row[x] == 'A':
-                    groups.Star(x * BLOCK_S, y * BLOCK_S, 'a',
-                                self.astar[level_num])
+                    groups.Point(x * BLOCK_S, y * BLOCK_S, 'a', level_num,
+                                self.apoint[level_num])
                 if row[x] == 'B':
-                    groups.Star(x * BLOCK_S, y * BLOCK_S, 'b',
-                                self.bstar[level_num])
+                    groups.Point(x * BLOCK_S, y * BLOCK_S, 'b', level_num,
+                                self.bpoint[level_num])
             y += 1
 
     def loop(self):
@@ -304,7 +305,11 @@ class Game:
             elif self.level == 4:
                 for sound in self.sound_list:
                     sound.stop()
-                return 'win'
+                if self.player.points == 24:
+                    self.player.ticktock.stop()
+                    return 'prize'
+                else:
+                    return 'win'
             else:
                 self.level += 1
                 self.player.rect.centery = SCREEN_H
@@ -335,7 +340,11 @@ class Game:
             elif self.level == 0:
                 for sound in self.sound_list:
                     sound.stop()
-                return 'win'
+                if self.player.points == 24:
+                    self.player.ticktock.stop()
+                    return 'prize'
+                else:
+                    return 'win'
             else:
                 self.level -= 1
                 self.player.rect.centery = 0
@@ -350,14 +359,23 @@ class Game:
             return 'lose'
 
     def view(self):
+        pointsurface = self.font.render("Points: {}".format(self.player.points),
+                                        False, (0,0,0))
 
         if self.world == 0:
             world_color = (108 + self.level * 24, 186 + self.level * 7, 255)
+            self.bpoint[self.level].draw(self.screen)
         elif self.world == 1:
             world_color = (255,  186 + self.level * 7, 108 + self.level * 24)
+            self.apoint[self.level].draw(self.screen)
 
         self.sprites.update(self)
         self.screen.fill(world_color)
         self.sprites.draw(self.screen)
+        if self.world == 0:
+            self.bpoint[self.level].draw(self.screen)
+        elif self.world == 1:
+            self.apoint[self.level].draw(self.screen)
         self.levels[self.level].draw(self.screen)
+        self.screen.blit(pointsurface, (80, 10))
         pygame.display.flip()

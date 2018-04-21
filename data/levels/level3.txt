@@ -7,9 +7,9 @@ W  A     W     WWWWW
 W                  W
 W                  W
 WWWWWW       WWWWWWW
-W B             A  W
+W B          A     W
 W                  W
 W   WWW       WWWWWW
-W A                W
-W               A  W
+W     A            W
+W            A     W
 WWWWWW    WWWWWWWWWW
